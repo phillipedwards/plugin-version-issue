@@ -3,9 +3,9 @@ module plugin-version-issue
 go 1.18
 
 require (
-	github.com/pulumi/pulumi-random/sdk/v4 v4.11.2
-	github.com/pulumi/pulumi-vault/sdk/v5 v5.8.0
-	github.com/pulumi/pulumi/sdk/v3 v3.52.1
+	github.com/pulumi/pulumi-random/sdk/v4 v4.8.2
+	github.com/pulumi/pulumi-vault/sdk/v5 v5.6.0
+	github.com/pulumi/pulumi/sdk/v3 v3.48.0
 )
 
 require (
