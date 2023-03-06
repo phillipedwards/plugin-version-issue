@@ -26,7 +26,6 @@ import (
 
 	"github.com/pulumi/pulumi/sdk/v3/go/common/constant"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/util/contract"
-	pulumirpc "github.com/pulumi/pulumi/sdk/v3/proto/go"
 
 	"google.golang.org/grpc"
 )
@@ -151,12 +150,8 @@ type RunInfo struct {
 	EngineAddr       string
 	Organization     string
 	Mocks            MockResourceMonitor
-
-	getPlugins bool
-	engineConn *grpc.ClientConn // Pre-existing engine connection. If set this is used over EngineAddr.
-
-	// If non-nil, wraps the resource monitor client used by Context.
-	wrapResourceMonitorClient func(pulumirpc.ResourceMonitorClient) pulumirpc.ResourceMonitorClient
+	getPlugins       bool
+	engineConn       *grpc.ClientConn // Pre-existing engine connection. If set this is used over EngineAddr.
 }
 
 // getEnvInfo reads various program information from the process environment.
@@ -200,7 +195,7 @@ const (
 	// EnvConfig is the envvar used to read the current Pulumi configuration variables.
 	EnvConfig = "PULUMI_CONFIG"
 	// EnvConfigSecretKeys is the envvar used to read the current Pulumi configuration keys that are secrets.
-	//nolint:gosec
+	//nolint: gosec
 	EnvConfigSecretKeys = "PULUMI_CONFIG_SECRET_KEYS"
 	// EnvParallel is the envvar used to read the current Pulumi degree of parallelism.
 	EnvParallel = "PULUMI_PARALLEL"

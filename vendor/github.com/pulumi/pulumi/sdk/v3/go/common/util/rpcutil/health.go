@@ -20,7 +20,6 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 )
@@ -29,7 +28,7 @@ import (
 func Healthcheck(context context.Context, addr string, duration time.Duration, cancel context.CancelFunc) error {
 	conn, err := grpc.Dial(
 		addr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithInsecure(),
 		grpc.WithUnaryInterceptor(OpenTracingClientInterceptor()),
 		grpc.WithStreamInterceptor(OpenTracingStreamClientInterceptor()),
 		GrpcChannelOptions(),

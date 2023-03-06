@@ -48,9 +48,6 @@ type CreateStackRequest struct {
 
 	// An optional set of tags to apply to the stack.
 	Tags map[StackTagName]string `json:"tags,omitempty"`
-
-	// An optional set of teams to assign to the stack.
-	Teams []string `json:"teams,omitempty"`
 }
 
 // CreateStackResponse is the response from a create Stack request.

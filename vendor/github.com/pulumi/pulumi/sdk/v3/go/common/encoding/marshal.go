@@ -19,11 +19,10 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"path/filepath"
 
-	"github.com/pulumi/pulumi/sdk/v3/go/common/util/yamlutil"
-	yaml "gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v2"
 )
 
 var (
@@ -98,14 +97,7 @@ type yamlMarshaler struct {
 }
 
 func (m *yamlMarshaler) Marshal(v interface{}) ([]byte, error) {
-	if r, ok := v.(yamlutil.HasRawValue); ok {
-		if len(r.RawValue()) > 0 {
-			// Attempt a comment preserving edit:
-			return yamlutil.Edit(r.RawValue(), v)
-		}
-	}
-
-	return yamlutil.YamlEncode(v)
+	return yaml.Marshal(v)
 }
 
 func (m *yamlMarshaler) Unmarshal(data []byte, v interface{}) error {
@@ -155,7 +147,7 @@ func (m *gzipMarshaller) Unmarshal(data []byte, v interface{}) error {
 		return err
 	}
 	defer reader.Close()
-	inflated, err := io.ReadAll(reader)
+	inflated, err := ioutil.ReadAll(reader)
 	if err != nil {
 		return err
 	}

@@ -15,6 +15,7 @@
 package fsutil
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -47,7 +48,7 @@ func CopyFile(dst string, src string, excl map[string]bool) error {
 		}
 	} else if info.Mode().IsRegular() {
 		// Copy files by reading and rewriting their contents.  Skip symlinks and other special files.
-		data, err := os.ReadFile(src)
+		data, err := ioutil.ReadFile(src)
 		if err != nil {
 			return err
 		}
@@ -55,7 +56,7 @@ func CopyFile(dst string, src string, excl map[string]bool) error {
 		if err = os.MkdirAll(dstdir, 0700); err != nil {
 			return err
 		}
-		if err = os.WriteFile(dst, data, info.Mode()); err != nil {
+		if err = ioutil.WriteFile(dst, data, info.Mode()); err != nil {
 			return err
 		}
 	}

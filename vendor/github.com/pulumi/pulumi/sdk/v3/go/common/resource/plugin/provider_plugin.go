@@ -32,7 +32,6 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
@@ -167,7 +166,7 @@ func NewProvider(host Host, ctx *Context, pkg tokens.Package, version *semver.Ve
 func providerPluginDialOptions(ctx *Context, pkg tokens.Package, path string) []grpc.DialOption {
 	dialOpts := append(
 		rpcutil.OpenTracingInterceptorDialOptions(otgrpc.SpanDecorator(decorateProviderSpans)),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithInsecure(),
 		rpcutil.GrpcChannelOptions(),
 	)
 
@@ -341,7 +340,7 @@ func (p *provider) CheckConfig(urn resource.URN, olds,
 	}
 
 	// And now any properties that failed verification.
-	failures := make([]CheckFailure, 0, len(resp.GetFailures()))
+	var failures []CheckFailure
 	for _, failure := range resp.GetFailures() {
 		failures = append(failures, CheckFailure{resource.PropertyKey(failure.Property), failure.Reason})
 	}
@@ -442,15 +441,15 @@ func (p *provider) DiffConfig(urn resource.URN, olds, news resource.PropertyMap,
 		return DiffResult{}, nil
 	}
 
-	var replaces = make([]resource.PropertyKey, 0, len(resp.GetReplaces()))
+	var replaces []resource.PropertyKey
 	for _, replace := range resp.GetReplaces() {
 		replaces = append(replaces, resource.PropertyKey(replace))
 	}
-	var stables = make([]resource.PropertyKey, 0, len(resp.GetStables()))
+	var stables []resource.PropertyKey
 	for _, stable := range resp.GetStables() {
 		stables = append(stables, resource.PropertyKey(stable))
 	}
-	var diffs = make([]resource.PropertyKey, 0, len(resp.GetDiffs()))
+	var diffs []resource.PropertyKey
 	for _, diff := range resp.GetDiffs() {
 		diffs = append(diffs, resource.PropertyKey(diff))
 	}
@@ -701,7 +700,7 @@ func (p *provider) Check(urn resource.URN,
 	}
 
 	// And now any properties that failed verification.
-	failures := make([]CheckFailure, 0, len(resp.GetFailures()))
+	var failures []CheckFailure
 	for _, failure := range resp.GetFailures() {
 		failures = append(failures, CheckFailure{resource.PropertyKey(failure.Property), failure.Reason})
 	}
@@ -772,15 +771,15 @@ func (p *provider) Diff(urn resource.URN, id resource.ID,
 		return DiffResult{}, rpcError
 	}
 
-	var replaces = make([]resource.PropertyKey, 0, len(resp.GetReplaces()))
+	var replaces []resource.PropertyKey
 	for _, replace := range resp.GetReplaces() {
 		replaces = append(replaces, resource.PropertyKey(replace))
 	}
-	var stables = make([]resource.PropertyKey, 0, len(resp.GetStables()))
+	var stables []resource.PropertyKey
 	for _, stable := range resp.GetStables() {
 		stables = append(stables, resource.PropertyKey(stable))
 	}
-	var diffs = make([]resource.PropertyKey, 0, len(resp.GetDiffs()))
+	var diffs []resource.PropertyKey
 	for _, diff := range resp.GetDiffs() {
 		diffs = append(diffs, resource.PropertyKey(diff))
 	}
@@ -1350,7 +1349,7 @@ func (p *provider) Invoke(tok tokens.ModuleMember, args resource.PropertyMap) (r
 	}
 
 	// And now any properties that failed verification.
-	failures := make([]CheckFailure, 0, len(resp.GetFailures()))
+	var failures []CheckFailure
 	for _, failure := range resp.GetFailures() {
 		failures = append(failures, CheckFailure{resource.PropertyKey(failure.Property), failure.Reason})
 	}
@@ -1525,7 +1524,7 @@ func (p *provider) Call(tok tokens.ModuleMember, args resource.PropertyMap, info
 	}
 
 	// And now any properties that failed verification.
-	failures := make([]CheckFailure, 0, len(resp.GetFailures()))
+	var failures []CheckFailure
 	for _, failure := range resp.GetFailures() {
 		failures = append(failures, CheckFailure{resource.PropertyKey(failure.Property), failure.Reason})
 	}
@@ -1733,22 +1732,4 @@ func decorateProviderSpans(span opentracing.Span, method string, req, resp inter
 	case "/pulumirpc.ResourceProvider/Invoke":
 		span.SetTag("pulumi-decorator", req.(*pulumirpc.InvokeRequest).Tok)
 	}
-}
-
-// GetMapping fetches the conversion mapping (if any) for this resource provider.
-func (p *provider) GetMapping(key string) ([]byte, string, error) {
-	resp, err := p.clientRaw.GetMapping(p.requestContext(), &pulumirpc.GetMappingRequest{
-		Key: key,
-	})
-	if err != nil {
-		rpcError := rpcerror.Convert(err)
-		code := rpcError.Code()
-		if code == codes.Unimplemented {
-			// For backwards compatibility, just return nothing as if the provider didn't have a mapping for
-			// the given key
-			return nil, "", nil
-		}
-		return nil, "", err
-	}
-	return resp.Data, resp.Provider, nil
 }

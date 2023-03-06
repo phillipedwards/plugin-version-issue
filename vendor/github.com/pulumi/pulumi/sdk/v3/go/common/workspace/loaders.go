@@ -16,6 +16,7 @@ package workspace
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -48,9 +49,9 @@ var policyPackProjectSingleton = &policyPackProjectLoader{
 	internal: map[string]*PolicyPackProject{},
 }
 
-// readFileStripUTF8BOM wraps os.ReadFile and also strips the UTF-8 Byte-order Mark (BOM) if present.
+// readFileStripUTF8BOM wraps ioutil.ReadFile and also strips the UTF-8 Byte-order Mark (BOM) if present.
 func readFileStripUTF8BOM(path string) ([]byte, error) {
-	b, err := os.ReadFile(path)
+	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +131,6 @@ func (singleton *projectLoader) load(path string) (*Project, error) {
 		return nil, fmt.Errorf("could not unmarshal '%s': %w", path, err)
 	}
 
-	project.raw = b
 	singleton.internal[path] = &project
 	return &project, nil
 }
@@ -248,7 +248,6 @@ func (singleton *projectStackLoader) load(project *Project, path string) (*Proje
 		projectStack.Config = make(config.Map)
 	}
 
-	projectStack.raw = b
 	singleton.internal[path] = &projectStack
 	return &projectStack, nil
 }

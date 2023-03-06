@@ -66,8 +66,7 @@ func GetPolicyDocument(ctx *pulumi.Context, args *GetPolicyDocumentArgs, opts ..
 
 // A collection of arguments for invoking getPolicyDocument.
 type GetPolicyDocumentArgs struct {
-	Namespace *string                 `pulumi:"namespace"`
-	Rules     []GetPolicyDocumentRule `pulumi:"rules"`
+	Rules []GetPolicyDocumentRule `pulumi:"rules"`
 }
 
 // A collection of values returned by getPolicyDocument.
@@ -75,9 +74,8 @@ type GetPolicyDocumentResult struct {
 	// The above arguments serialized as a standard Vault HCL policy document.
 	Hcl string `pulumi:"hcl"`
 	// The provider-assigned unique ID for this managed resource.
-	Id        string                  `pulumi:"id"`
-	Namespace *string                 `pulumi:"namespace"`
-	Rules     []GetPolicyDocumentRule `pulumi:"rules"`
+	Id    string                  `pulumi:"id"`
+	Rules []GetPolicyDocumentRule `pulumi:"rules"`
 }
 
 func GetPolicyDocumentOutput(ctx *pulumi.Context, args GetPolicyDocumentOutputArgs, opts ...pulumi.InvokeOption) GetPolicyDocumentResultOutput {
@@ -95,8 +93,7 @@ func GetPolicyDocumentOutput(ctx *pulumi.Context, args GetPolicyDocumentOutputAr
 
 // A collection of arguments for invoking getPolicyDocument.
 type GetPolicyDocumentOutputArgs struct {
-	Namespace pulumi.StringPtrInput           `pulumi:"namespace"`
-	Rules     GetPolicyDocumentRuleArrayInput `pulumi:"rules"`
+	Rules GetPolicyDocumentRuleArrayInput `pulumi:"rules"`
 }
 
 func (GetPolicyDocumentOutputArgs) ElementType() reflect.Type {
@@ -126,10 +123,6 @@ func (o GetPolicyDocumentResultOutput) Hcl() pulumi.StringOutput {
 // The provider-assigned unique ID for this managed resource.
 func (o GetPolicyDocumentResultOutput) Id() pulumi.StringOutput {
 	return o.ApplyT(func(v GetPolicyDocumentResult) string { return v.Id }).(pulumi.StringOutput)
-}
-
-func (o GetPolicyDocumentResultOutput) Namespace() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v GetPolicyDocumentResult) *string { return v.Namespace }).(pulumi.StringPtrOutput)
 }
 
 func (o GetPolicyDocumentResultOutput) Rules() GetPolicyDocumentRuleArrayOutput {

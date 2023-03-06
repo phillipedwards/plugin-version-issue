@@ -238,11 +238,6 @@
         "pluginOptions":{
             "title":"PluginOptions",
             "type":"object",
-            "additionalProperties":false,
-            "required":[
-                "name",
-                "path"
-            ],
             "properties":{
                 "name":{
                     "type":"string",

@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os"
 
-	"golang.org/x/term"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 // ReadConsoleNoEcho reads from the console without echoing.  This is useful for reading passwords.
@@ -27,7 +27,7 @@ func ReadConsoleNoEcho(prompt string) (string, error) {
 	// error when it tries to disable local echo.
 	//
 	// In this case, just read normally
-	if !term.IsTerminal(int(os.Stdin.Fd())) {
+	if !terminal.IsTerminal(int(os.Stdin.Fd())) {
 		return ReadConsole(prompt)
 	}
 
@@ -35,7 +35,7 @@ func ReadConsoleNoEcho(prompt string) (string, error) {
 		fmt.Print(prompt + ": ")
 	}
 
-	b, err := term.ReadPassword(int(os.Stdin.Fd()))
+	b, err := terminal.ReadPassword(int(os.Stdin.Fd()))
 
 	fmt.Println() // echo a newline, since the user's keypress did not generate one
 

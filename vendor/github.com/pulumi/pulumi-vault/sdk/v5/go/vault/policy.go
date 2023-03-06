@@ -25,11 +25,6 @@ type Policy struct {
 
 	// The name of the policy
 	Name pulumi.StringOutput `pulumi:"name"`
-	// The namespace to provision the resource in.
-	// The value should not contain leading or trailing forward slashes.
-	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
-	// *Available only for Vault Enterprise*.
-	Namespace pulumi.StringPtrOutput `pulumi:"namespace"`
 	// String containing a Vault policy
 	Policy pulumi.StringOutput `pulumi:"policy"`
 }
@@ -68,11 +63,6 @@ func GetPolicy(ctx *pulumi.Context,
 type policyState struct {
 	// The name of the policy
 	Name *string `pulumi:"name"`
-	// The namespace to provision the resource in.
-	// The value should not contain leading or trailing forward slashes.
-	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
-	// *Available only for Vault Enterprise*.
-	Namespace *string `pulumi:"namespace"`
 	// String containing a Vault policy
 	Policy *string `pulumi:"policy"`
 }
@@ -80,11 +70,6 @@ type policyState struct {
 type PolicyState struct {
 	// The name of the policy
 	Name pulumi.StringPtrInput
-	// The namespace to provision the resource in.
-	// The value should not contain leading or trailing forward slashes.
-	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
-	// *Available only for Vault Enterprise*.
-	Namespace pulumi.StringPtrInput
 	// String containing a Vault policy
 	Policy pulumi.StringPtrInput
 }
@@ -96,11 +81,6 @@ func (PolicyState) ElementType() reflect.Type {
 type policyArgs struct {
 	// The name of the policy
 	Name *string `pulumi:"name"`
-	// The namespace to provision the resource in.
-	// The value should not contain leading or trailing forward slashes.
-	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
-	// *Available only for Vault Enterprise*.
-	Namespace *string `pulumi:"namespace"`
 	// String containing a Vault policy
 	Policy string `pulumi:"policy"`
 }
@@ -109,11 +89,6 @@ type policyArgs struct {
 type PolicyArgs struct {
 	// The name of the policy
 	Name pulumi.StringPtrInput
-	// The namespace to provision the resource in.
-	// The value should not contain leading or trailing forward slashes.
-	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
-	// *Available only for Vault Enterprise*.
-	Namespace pulumi.StringPtrInput
 	// String containing a Vault policy
 	Policy pulumi.StringInput
 }
@@ -208,14 +183,6 @@ func (o PolicyOutput) ToPolicyOutputWithContext(ctx context.Context) PolicyOutpu
 // The name of the policy
 func (o PolicyOutput) Name() pulumi.StringOutput {
 	return o.ApplyT(func(v *Policy) pulumi.StringOutput { return v.Name }).(pulumi.StringOutput)
-}
-
-// The namespace to provision the resource in.
-// The value should not contain leading or trailing forward slashes.
-// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
-// *Available only for Vault Enterprise*.
-func (o PolicyOutput) Namespace() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *Policy) pulumi.StringPtrOutput { return v.Namespace }).(pulumi.StringPtrOutput)
 }
 
 // String containing a Vault policy

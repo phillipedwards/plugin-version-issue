@@ -46,18 +46,13 @@ func LookupAuthBackend(ctx *pulumi.Context, args *LookupAuthBackendArgs, opts ..
 
 // A collection of arguments for invoking getAuthBackend.
 type LookupAuthBackendArgs struct {
-	// The namespace of the target resource.
-	// The value should not contain leading or trailing forward slashes.
-	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
-	// *Available only for Vault Enterprise*.
-	Namespace *string `pulumi:"namespace"`
 	// The auth backend mount point.
 	Path string `pulumi:"path"`
 }
 
 // A collection of values returned by getAuthBackend.
 type LookupAuthBackendResult struct {
-	// The accessor for this auth method.
+	// The accessor for this auth method
 	Accessor string `pulumi:"accessor"`
 	// The default lease duration in seconds.
 	DefaultLeaseTtlSeconds int `pulumi:"defaultLeaseTtlSeconds"`
@@ -70,9 +65,8 @@ type LookupAuthBackendResult struct {
 	// Specifies if the auth method is local only.
 	Local bool `pulumi:"local"`
 	// The maximum lease duration in seconds.
-	MaxLeaseTtlSeconds int     `pulumi:"maxLeaseTtlSeconds"`
-	Namespace          *string `pulumi:"namespace"`
-	Path               string  `pulumi:"path"`
+	MaxLeaseTtlSeconds int    `pulumi:"maxLeaseTtlSeconds"`
+	Path               string `pulumi:"path"`
 	// The name of the auth method type.
 	Type string `pulumi:"type"`
 }
@@ -92,11 +86,6 @@ func LookupAuthBackendOutput(ctx *pulumi.Context, args LookupAuthBackendOutputAr
 
 // A collection of arguments for invoking getAuthBackend.
 type LookupAuthBackendOutputArgs struct {
-	// The namespace of the target resource.
-	// The value should not contain leading or trailing forward slashes.
-	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
-	// *Available only for Vault Enterprise*.
-	Namespace pulumi.StringPtrInput `pulumi:"namespace"`
 	// The auth backend mount point.
 	Path pulumi.StringInput `pulumi:"path"`
 }
@@ -120,7 +109,7 @@ func (o LookupAuthBackendResultOutput) ToLookupAuthBackendResultOutputWithContex
 	return o
 }
 
-// The accessor for this auth method.
+// The accessor for this auth method
 func (o LookupAuthBackendResultOutput) Accessor() pulumi.StringOutput {
 	return o.ApplyT(func(v LookupAuthBackendResult) string { return v.Accessor }).(pulumi.StringOutput)
 }
@@ -153,10 +142,6 @@ func (o LookupAuthBackendResultOutput) Local() pulumi.BoolOutput {
 // The maximum lease duration in seconds.
 func (o LookupAuthBackendResultOutput) MaxLeaseTtlSeconds() pulumi.IntOutput {
 	return o.ApplyT(func(v LookupAuthBackendResult) int { return v.MaxLeaseTtlSeconds }).(pulumi.IntOutput)
-}
-
-func (o LookupAuthBackendResultOutput) Namespace() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v LookupAuthBackendResult) *string { return v.Namespace }).(pulumi.StringPtrOutput)
 }
 
 func (o LookupAuthBackendResultOutput) Path() pulumi.StringOutput {

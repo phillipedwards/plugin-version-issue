@@ -15,9 +15,9 @@
 package workspace
 
 import (
-	"errors"
 	"fmt"
 	"io/fs"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -26,6 +26,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/pkg/errors"
 	"github.com/texttheater/golang-levenshtein/levenshtein"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/common/util/contract"
@@ -183,11 +184,7 @@ func (repo TemplateRepository) PolicyTemplates() ([]PolicyPackTemplate, error) {
 
 			template, err := LoadPolicyPackTemplate(filepath.Join(path, name))
 			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				logging.V(2).Infof(
-					"Failed to load template %s: %s",
-					name, err.Error(),
-				)
-				result = append(result, PolicyPackTemplate{Name: name, Error: err})
+				return nil, err
 			} else if err == nil {
 				result = append(result, template)
 			}
@@ -220,12 +217,6 @@ type PolicyPackTemplate struct {
 	Dir         string // The directory containing PulumiPolicy.yaml.
 	Name        string // The name of the template.
 	Description string // Description of the template.
-	Error       error  // Non-nil if the template is broken.
-}
-
-// Errored returns if the template has an error
-func (t PolicyPackTemplate) Errored() bool {
-	return t.Error != nil
 }
 
 // cleanupLegacyTemplateDir deletes an existing ~/.pulumi/templates directory if it isn't a git repository.
@@ -294,14 +285,14 @@ func RetrieveTemplates(templateNamePathOrURL string, offline bool,
 // retrieveURLTemplates retrieves the "template repository" at the specified URL.
 func retrieveURLTemplates(rawurl string, offline bool, templateKind TemplateKind) (TemplateRepository, error) {
 	if offline {
-		return TemplateRepository{}, fmt.Errorf("cannot use %s offline", rawurl)
+		return TemplateRepository{}, errors.Errorf("cannot use %s offline", rawurl)
 	}
 
 	var err error
 
 	// Create a temp dir.
 	var temp string
-	if temp, err = os.MkdirTemp("", "pulumi-template-"); err != nil {
+	if temp, err = ioutil.TempDir("", "pulumi-template-"); err != nil {
 		return TemplateRepository{}, err
 	}
 
@@ -435,7 +426,7 @@ func RetrieveGitFolder(rawurl string, path string) (string, error) {
 		return "", err
 	}
 	if !info.IsDir() {
-		return "", fmt.Errorf("%s is not a directory", fullPath)
+		return "", errors.Errorf("%s is not a directory", fullPath)
 	}
 
 	return fullPath, nil
@@ -448,7 +439,7 @@ func LoadTemplate(path string) (Template, error) {
 		return Template{}, err
 	}
 	if !info.IsDir() {
-		return Template{}, fmt.Errorf("%s is not a directory", path)
+		return Template{}, errors.Errorf("%s is not a directory", path)
 	}
 
 	// TODO handle other extensions like Pulumi.yml and Pulumi.json?
@@ -508,7 +499,7 @@ func CopyTemplateFiles(
 			}
 
 			// Read the source file.
-			b, err := os.ReadFile(source)
+			b, err := ioutil.ReadFile(source)
 			if err != nil {
 				return err
 			}
@@ -551,7 +542,7 @@ func LoadPolicyPackTemplate(path string) (PolicyPackTemplate, error) {
 		return PolicyPackTemplate{}, err
 	}
 	if !info.IsDir() {
-		return PolicyPackTemplate{}, fmt.Errorf("%s is not a directory", path)
+		return PolicyPackTemplate{}, errors.Errorf("%s is not a directory", path)
 	}
 
 	pack, err := LoadPolicyPack(filepath.Join(path, "PulumiPolicy.yaml"))
