@@ -1,0 +1,5 @@
+config:
+  vault:address: http://127.0.0.1:8200
+  vault:token:
+    secure: AAABAHW4LMO60W7hxae5QJKR0PG5orFDx1wtRW/yhXBZfOumtjxDZDptKF9de1DZMcreeM3FnYB6mAXb
+  pulumi:disable-default-providers: ["*"]
