@@ -19,11 +19,11 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"hash"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -39,10 +39,10 @@ import (
 	"github.com/blang/semver"
 	"github.com/cheggaaa/pb"
 	"github.com/djherbis/times"
-	"github.com/pkg/errors"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/common/diag"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/diag/colors"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/env"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/util/archive"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/util/cmdutil"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/util/contract"
@@ -102,11 +102,12 @@ func init() {
 
 // parsePluginDownloadURLOverrides parses an overrides string with the expected format `regexp1=URL1,regexp2=URL2`.
 func parsePluginDownloadURLOverrides(overrides string) (pluginDownloadOverrideArray, error) {
-	var result pluginDownloadOverrideArray
+	var splits = strings.Split(overrides, ",")
+	var result = make(pluginDownloadOverrideArray, 0, len(splits))
 	if overrides == "" {
 		return result, nil
 	}
-	for _, pair := range strings.Split(overrides, ",") {
+	for _, pair := range splits {
 		split := strings.Split(pair, "=")
 		if len(split) != 2 || split[0] == "" || split[1] == "" {
 			return nil, fmt.Errorf("expected format to be \"regexp1=URL1,regexp2=URL2\"; got %q", overrides)
@@ -137,7 +138,7 @@ type InstallPluginError struct {
 
 func (err *InstallPluginError) Error() string {
 	if err.Version != nil {
-		return fmt.Sprintf("Could not automatically download and install %[1]s plugin 'pulumi-%[1]s-%[2]s'"+
+		return fmt.Sprintf("Could not automatically download and install %[1]s plugin 'pulumi-%[1]s-%[2]s' "+
 			"at version v%[3]s, "+
 			"install the plugin using `pulumi plugin install %[1]s %[2]s v%[3]s`.\n"+
 			"Underlying error: %[4]s",
@@ -270,7 +271,7 @@ func (source *githubSource) GetLatestVersion(
 	if err != nil {
 		return nil, err
 	}
-	jsonBody, err := ioutil.ReadAll(resp)
+	jsonBody, err := io.ReadAll(resp)
 	if err != nil {
 		return nil, fmt.Errorf("cannot unmarshal github response len(%d): %s", length, err.Error())
 	}
@@ -308,7 +309,7 @@ func (source *githubSource) Download(
 	if err != nil {
 		return nil, -1, err
 	}
-	jsonBody, err := ioutil.ReadAll(resp)
+	jsonBody, err := io.ReadAll(resp)
 	if err != nil {
 		logging.V(9).Infof("cannot unmarshal github response len(%d): %s", length, err.Error())
 		return nil, -1, err
@@ -334,7 +335,7 @@ func (source *githubSource) Download(
 	if assetURL == "" {
 		logging.V(9).Infof("github json response: %s", jsonBody)
 		logging.V(9).Infof("plugin asset '%s' not found", assetName)
-		return nil, -1, errors.Errorf("plugin asset '%s' not found", assetName)
+		return nil, -1, fmt.Errorf("plugin asset '%s' not found", assetName)
 	}
 
 	logging.V(1).Infof("%s downloading from %s", source.name, assetURL)
@@ -745,19 +746,19 @@ func (spec PluginSpec) Download() (io.ReadCloser, int64, error) {
 	case "darwin", "linux", "windows":
 		opSy = runtime.GOOS
 	default:
-		return nil, -1, errors.Errorf("unsupported plugin OS: %s", runtime.GOOS)
+		return nil, -1, fmt.Errorf("unsupported plugin OS: %s", runtime.GOOS)
 	}
 	var arch string
 	switch runtime.GOARCH {
 	case "amd64", "arm64":
 		arch = runtime.GOARCH
 	default:
-		return nil, -1, errors.Errorf("unsupported plugin architecture: %s", runtime.GOARCH)
+		return nil, -1, fmt.Errorf("unsupported plugin architecture: %s", runtime.GOARCH)
 	}
 
 	// The plugin version is necessary for the endpoint. If it's not present, return an error.
 	if spec.Version == nil {
-		return nil, -1, errors.Errorf("unknown version for plugin %s", spec.Name)
+		return nil, -1, fmt.Errorf("unknown version for plugin %s", spec.Name)
 	}
 
 	source, err := spec.GetSource()
@@ -851,7 +852,7 @@ func (spec PluginSpec) installLock() (unlock func(), err error) {
 	lockFilePath := fmt.Sprintf("%s.lock", finalDir)
 
 	if err := os.MkdirAll(filepath.Dir(lockFilePath), 0700); err != nil {
-		return nil, errors.Wrap(err, "creating plugin root")
+		return nil, fmt.Errorf("creating plugin root: %w", err)
 	}
 
 	mutex := fsutil.NewFileMutex(lockFilePath)
@@ -938,7 +939,7 @@ func DownloadToFile(
 	}
 
 	tryDownloadToFile := func() (string, error, error) {
-		file, err := ioutil.TempFile("" /* default temp dir */, "pulumi-plugin-tar")
+		file, err := os.CreateTemp("" /* default temp dir */, "pulumi-plugin-tar")
 		if err != nil {
 			return "", nil, err
 		}
@@ -1022,7 +1023,7 @@ type singleFilePlugin struct {
 }
 
 func (p singleFilePlugin) writeToDir(finalDir string) error {
-	bytes, err := ioutil.ReadAll(p.F)
+	bytes, err := io.ReadAll(p.F)
 	if err != nil {
 		return err
 	}
@@ -1089,7 +1090,7 @@ func (p dirPlugin) writeToDir(dstRoot string) error {
 			return err
 		}
 
-		bytes, err := ioutil.ReadAll(src)
+		bytes, err := io.ReadAll(src)
 		if err != nil {
 			return err
 		}
@@ -1165,7 +1166,7 @@ func (spec PluginSpec) InstallWithContext(ctx context.Context, content PluginCon
 	}
 
 	// Create an empty partial file to indicate installation is in-progress.
-	if err := ioutil.WriteFile(partialFilePath, nil, 0600); err != nil {
+	if err := os.WriteFile(partialFilePath, nil, 0600); err != nil {
 		return err
 	}
 
@@ -1186,7 +1187,7 @@ func (spec PluginSpec) InstallWithContext(ctx context.Context, content PluginCon
 	// Install dependencies, if needed.
 	proj, err := LoadPluginProject(filepath.Join(finalDir, "PulumiPlugin.yaml"))
 	if err != nil && !os.IsNotExist(err) {
-		return errors.Wrap(err, "loading PulumiPlugin.yaml")
+		return fmt.Errorf("loading PulumiPlugin.yaml: %w", err)
 	}
 	if proj != nil {
 		runtime := strings.ToLower(proj.Runtime.Name())
@@ -1199,11 +1200,11 @@ func (spec PluginSpec) InstallWithContext(ctx context.Context, content PluginCon
 			var b bytes.Buffer
 			if _, err := npm.Install(ctx, finalDir, true /* production */, &b, &b); err != nil {
 				os.Stderr.Write(b.Bytes())
-				return errors.Wrap(err, "installing plugin dependencies")
+				return fmt.Errorf("installing plugin dependencies: %w", err)
 			}
 		case "python":
 			if err := python.InstallDependencies(ctx, finalDir, "venv", false /*showOutput*/); err != nil {
-				return errors.Wrap(err, "installing plugin dependencies")
+				return fmt.Errorf("installing plugin dependencies: %w", err)
 			}
 		}
 	}
@@ -1223,11 +1224,11 @@ func cleanupTempDirs(finalDir string) error {
 
 	for _, info := range infos {
 		// Temp dirs have a suffix of `.tmpXXXXXX` (where `XXXXXX`) is a random number,
-		// from ioutil.TempFile.
+		// from os.CreateTemp.
 		if info.IsDir() && installingPluginRegexp.MatchString(info.Name()) {
 			path := filepath.Join(dir, info.Name())
 			if err := os.RemoveAll(path); err != nil {
-				return errors.Wrapf(err, "cleaning up temp dir %s", path)
+				return fmt.Errorf("cleaning up temp dir %s: %w", path, err)
 			}
 		}
 	}
@@ -1570,8 +1571,7 @@ func getPluginInfoAndPath(
 
 	// If we have a version of the plugin on its $PATH, use it, unless we have opted out of this behavior explicitly.
 	// This supports development scenarios.
-	optOut, isFound := os.LookupEnv("PULUMI_IGNORE_AMBIENT_PLUGINS")
-	includeAmbient := !(isFound && cmdutil.IsTruthy(optOut)) || isBundled
+	includeAmbient := !(env.IgnoreAmbientPlugins.Value()) || isBundled
 	if includeAmbient {
 		filename = (&PluginSpec{Kind: kind, Name: name}).File()
 		if path, err := exec.LookPath(filename); err == nil {
@@ -1625,7 +1625,7 @@ func getPluginInfoAndPath(
 		plugins, err = GetPluginsWithMetadata()
 	}
 	if err != nil {
-		return nil, "", errors.Wrapf(err, "loading plugin list")
+		return nil, "", fmt.Errorf("loading plugin list: %w", err)
 	}
 
 	var match *PluginInfo
@@ -1830,7 +1830,7 @@ var pluginRegexp = regexp.MustCompile(
 
 // installingPluginRegexp matches the name of temporary folders. Previous versions of Pulumi first extracted
 // plugins to a temporary folder with a suffix of `.tmpXXXXXX` (where `XXXXXX`) is a random number, from
-// ioutil.TempFile. We should ignore these folders.
+// os.CreateTemp. We should ignore these folders.
 var installingPluginRegexp = regexp.MustCompile(`\.tmp[0-9]+$`)
 
 // tryPlugin returns true if a file is a plugin, and extracts information about it.

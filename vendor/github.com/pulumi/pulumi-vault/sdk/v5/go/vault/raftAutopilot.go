@@ -55,6 +55,8 @@ type RaftAutopilot struct {
 	// server can go without leader contact before being considered failed. This only takes
 	// effect when `cleanupDeadServers` is set.
 	DeadServerLastContactThreshold pulumi.StringPtrOutput `pulumi:"deadServerLastContactThreshold"`
+	// Disables automatically upgrading Vault using autopilot. (Enterprise-only)
+	DisableUpgradeMigration pulumi.BoolPtrOutput `pulumi:"disableUpgradeMigration"`
 	// Limit the amount of time a server can go
 	// without leader contact before being considered unhealthy.
 	LastContactThreshold pulumi.StringPtrOutput `pulumi:"lastContactThreshold"`
@@ -65,6 +67,11 @@ type RaftAutopilot struct {
 	// autopilot can prune dead servers. This should at least be 3. Applicable only for
 	// voting nodes.
 	MinQuorum pulumi.IntPtrOutput `pulumi:"minQuorum"`
+	// The namespace to provision the resource in.
+	// The value should not contain leading or trailing forward slashes.
+	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
+	// *Available only for Vault Enterprise*.
+	Namespace pulumi.StringPtrOutput `pulumi:"namespace"`
 	// Minimum amount of time a server must be
 	// stable in the 'healthy' state before being added to the cluster.
 	ServerStabilizationTime pulumi.StringPtrOutput `pulumi:"serverStabilizationTime"`
@@ -106,6 +113,8 @@ type raftAutopilotState struct {
 	// server can go without leader contact before being considered failed. This only takes
 	// effect when `cleanupDeadServers` is set.
 	DeadServerLastContactThreshold *string `pulumi:"deadServerLastContactThreshold"`
+	// Disables automatically upgrading Vault using autopilot. (Enterprise-only)
+	DisableUpgradeMigration *bool `pulumi:"disableUpgradeMigration"`
 	// Limit the amount of time a server can go
 	// without leader contact before being considered unhealthy.
 	LastContactThreshold *string `pulumi:"lastContactThreshold"`
@@ -116,6 +125,11 @@ type raftAutopilotState struct {
 	// autopilot can prune dead servers. This should at least be 3. Applicable only for
 	// voting nodes.
 	MinQuorum *int `pulumi:"minQuorum"`
+	// The namespace to provision the resource in.
+	// The value should not contain leading or trailing forward slashes.
+	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
+	// *Available only for Vault Enterprise*.
+	Namespace *string `pulumi:"namespace"`
 	// Minimum amount of time a server must be
 	// stable in the 'healthy' state before being added to the cluster.
 	ServerStabilizationTime *string `pulumi:"serverStabilizationTime"`
@@ -129,6 +143,8 @@ type RaftAutopilotState struct {
 	// server can go without leader contact before being considered failed. This only takes
 	// effect when `cleanupDeadServers` is set.
 	DeadServerLastContactThreshold pulumi.StringPtrInput
+	// Disables automatically upgrading Vault using autopilot. (Enterprise-only)
+	DisableUpgradeMigration pulumi.BoolPtrInput
 	// Limit the amount of time a server can go
 	// without leader contact before being considered unhealthy.
 	LastContactThreshold pulumi.StringPtrInput
@@ -139,6 +155,11 @@ type RaftAutopilotState struct {
 	// autopilot can prune dead servers. This should at least be 3. Applicable only for
 	// voting nodes.
 	MinQuorum pulumi.IntPtrInput
+	// The namespace to provision the resource in.
+	// The value should not contain leading or trailing forward slashes.
+	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
+	// *Available only for Vault Enterprise*.
+	Namespace pulumi.StringPtrInput
 	// Minimum amount of time a server must be
 	// stable in the 'healthy' state before being added to the cluster.
 	ServerStabilizationTime pulumi.StringPtrInput
@@ -156,6 +177,8 @@ type raftAutopilotArgs struct {
 	// server can go without leader contact before being considered failed. This only takes
 	// effect when `cleanupDeadServers` is set.
 	DeadServerLastContactThreshold *string `pulumi:"deadServerLastContactThreshold"`
+	// Disables automatically upgrading Vault using autopilot. (Enterprise-only)
+	DisableUpgradeMigration *bool `pulumi:"disableUpgradeMigration"`
 	// Limit the amount of time a server can go
 	// without leader contact before being considered unhealthy.
 	LastContactThreshold *string `pulumi:"lastContactThreshold"`
@@ -166,6 +189,11 @@ type raftAutopilotArgs struct {
 	// autopilot can prune dead servers. This should at least be 3. Applicable only for
 	// voting nodes.
 	MinQuorum *int `pulumi:"minQuorum"`
+	// The namespace to provision the resource in.
+	// The value should not contain leading or trailing forward slashes.
+	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
+	// *Available only for Vault Enterprise*.
+	Namespace *string `pulumi:"namespace"`
 	// Minimum amount of time a server must be
 	// stable in the 'healthy' state before being added to the cluster.
 	ServerStabilizationTime *string `pulumi:"serverStabilizationTime"`
@@ -180,6 +208,8 @@ type RaftAutopilotArgs struct {
 	// server can go without leader contact before being considered failed. This only takes
 	// effect when `cleanupDeadServers` is set.
 	DeadServerLastContactThreshold pulumi.StringPtrInput
+	// Disables automatically upgrading Vault using autopilot. (Enterprise-only)
+	DisableUpgradeMigration pulumi.BoolPtrInput
 	// Limit the amount of time a server can go
 	// without leader contact before being considered unhealthy.
 	LastContactThreshold pulumi.StringPtrInput
@@ -190,6 +220,11 @@ type RaftAutopilotArgs struct {
 	// autopilot can prune dead servers. This should at least be 3. Applicable only for
 	// voting nodes.
 	MinQuorum pulumi.IntPtrInput
+	// The namespace to provision the resource in.
+	// The value should not contain leading or trailing forward slashes.
+	// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
+	// *Available only for Vault Enterprise*.
+	Namespace pulumi.StringPtrInput
 	// Minimum amount of time a server must be
 	// stable in the 'healthy' state before being added to the cluster.
 	ServerStabilizationTime pulumi.StringPtrInput
@@ -295,6 +330,11 @@ func (o RaftAutopilotOutput) DeadServerLastContactThreshold() pulumi.StringPtrOu
 	return o.ApplyT(func(v *RaftAutopilot) pulumi.StringPtrOutput { return v.DeadServerLastContactThreshold }).(pulumi.StringPtrOutput)
 }
 
+// Disables automatically upgrading Vault using autopilot. (Enterprise-only)
+func (o RaftAutopilotOutput) DisableUpgradeMigration() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *RaftAutopilot) pulumi.BoolPtrOutput { return v.DisableUpgradeMigration }).(pulumi.BoolPtrOutput)
+}
+
 // Limit the amount of time a server can go
 // without leader contact before being considered unhealthy.
 func (o RaftAutopilotOutput) LastContactThreshold() pulumi.StringPtrOutput {
@@ -312,6 +352,14 @@ func (o RaftAutopilotOutput) MaxTrailingLogs() pulumi.IntPtrOutput {
 // voting nodes.
 func (o RaftAutopilotOutput) MinQuorum() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v *RaftAutopilot) pulumi.IntPtrOutput { return v.MinQuorum }).(pulumi.IntPtrOutput)
+}
+
+// The namespace to provision the resource in.
+// The value should not contain leading or trailing forward slashes.
+// The `namespace` is always relative to the provider's configured [namespace](https://www.terraform.io/docs/providers/vault#namespace).
+// *Available only for Vault Enterprise*.
+func (o RaftAutopilotOutput) Namespace() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *RaftAutopilot) pulumi.StringPtrOutput { return v.Namespace }).(pulumi.StringPtrOutput)
 }
 
 // Minimum amount of time a server must be

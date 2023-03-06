@@ -188,20 +188,21 @@ github.com/pkg/errors
 # github.com/pkg/term v1.1.0
 ## explicit; go 1.14
 github.com/pkg/term/termios
-# github.com/pulumi/pulumi-random/sdk/v4 v4.8.2
-## explicit; go 1.17
+# github.com/pulumi/pulumi-random/sdk/v4 v4.11.2
+## explicit; go 1.19
 github.com/pulumi/pulumi-random/sdk/v4/go/random
-# github.com/pulumi/pulumi-vault/sdk/v5 v5.6.0
+# github.com/pulumi/pulumi-vault/sdk/v5 v5.8.0
 ## explicit; go 1.17
 github.com/pulumi/pulumi-vault/sdk/v5/go/vault
 github.com/pulumi/pulumi-vault/sdk/v5/go/vault/generic
-# github.com/pulumi/pulumi/sdk/v3 v3.48.0
+# github.com/pulumi/pulumi/sdk/v3 v3.52.1
 ## explicit; go 1.17
 github.com/pulumi/pulumi/sdk/v3/go/common/apitype
 github.com/pulumi/pulumi/sdk/v3/go/common/constant
 github.com/pulumi/pulumi/sdk/v3/go/common/diag
 github.com/pulumi/pulumi/sdk/v3/go/common/diag/colors
 github.com/pulumi/pulumi/sdk/v3/go/common/encoding
+github.com/pulumi/pulumi/sdk/v3/go/common/env
 github.com/pulumi/pulumi/sdk/v3/go/common/resource
 github.com/pulumi/pulumi/sdk/v3/go/common/resource/config
 github.com/pulumi/pulumi/sdk/v3/go/common/resource/plugin
@@ -210,6 +211,7 @@ github.com/pulumi/pulumi/sdk/v3/go/common/util/archive
 github.com/pulumi/pulumi/sdk/v3/go/common/util/ciutil
 github.com/pulumi/pulumi/sdk/v3/go/common/util/cmdutil
 github.com/pulumi/pulumi/sdk/v3/go/common/util/contract
+github.com/pulumi/pulumi/sdk/v3/go/common/util/env
 github.com/pulumi/pulumi/sdk/v3/go/common/util/fsutil
 github.com/pulumi/pulumi/sdk/v3/go/common/util/gitutil
 github.com/pulumi/pulumi/sdk/v3/go/common/util/httputil
@@ -219,6 +221,7 @@ github.com/pulumi/pulumi/sdk/v3/go/common/util/result
 github.com/pulumi/pulumi/sdk/v3/go/common/util/retry
 github.com/pulumi/pulumi/sdk/v3/go/common/util/rpcutil
 github.com/pulumi/pulumi/sdk/v3/go/common/util/rpcutil/rpcerror
+github.com/pulumi/pulumi/sdk/v3/go/common/util/yamlutil
 github.com/pulumi/pulumi/sdk/v3/go/common/version
 github.com/pulumi/pulumi/sdk/v3/go/common/workspace
 github.com/pulumi/pulumi/sdk/v3/go/pulumi
@@ -301,7 +304,6 @@ golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/agent
 golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 golang.org/x/crypto/ssh/knownhosts
-golang.org/x/crypto/ssh/terminal
 # golang.org/x/net v0.5.0
 ## explicit; go 1.17
 golang.org/x/net/context
@@ -427,9 +429,6 @@ google.golang.org/protobuf/types/known/timestamppb
 # gopkg.in/warnings.v0 v0.1.2
 ## explicit
 gopkg.in/warnings.v0
-# gopkg.in/yaml.v2 v2.4.0
-## explicit; go 1.15
-gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
